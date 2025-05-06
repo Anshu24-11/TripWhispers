@@ -35,6 +35,10 @@ module.exports.showListing=async (req,res)=>{
 
 module.exports.createListing=async (req,res,next)=>{
 
+  console.log("FILE RECEIVED:", req.file);
+console.log("BODY RECEIVED:", req.body);
+
+
     let response=await geocodingClient.forwardGeocode({
       query: req.body.listing.location,
      limit:1,
@@ -57,6 +61,35 @@ module.exports.createListing=async (req,res,next)=>{
    res.redirect("/listings");
    
   };
+// module.exports.createListing = async (req, res, next) => {
+//   try {
+//     console.log("MAP_TOKEN:", process.env.MAP_TOKEN); // Check if token exists
+
+//     let response = await geocodingClient.forwardGeocode({
+//       query: req.body.listing.location,
+//       limit: 1,
+//     }).send();
+
+//     let url = req.file?.path;
+//     let filename = req.file?.filename;
+
+//     const newListing = new Listing(req.body.listing);
+//     newListing.owner = req.user._id;
+//     newListing.image = { url, filename };
+//     newListing.geometry = response.body.features[0].geometry;
+
+//     let savedListing = await newListing.save();
+//     console.log("Saved listing:", savedListing);
+
+//     req.flash("success", "New listing is created");
+//     res.redirect("/listings");
+//   } catch (err) {
+//     console.error("Error in createListing:", err);
+//     req.flash("error", "Something went wrong.");
+//     res.redirect("/listings");
+//   }
+// };
+
 
 
   module.exports.renderEditform=async(req,res)=>{
