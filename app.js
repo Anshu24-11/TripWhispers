@@ -119,6 +119,9 @@ app.use((req,res,next)=>{
 //   res.send(registereduser);
 // })
 
+app.get("/",(req,res)=>{
+  res.render("listings/home")
+})
 
 app.use("/listings",listingsRouter);
 app.use("/",userRouter);
