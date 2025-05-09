@@ -33,34 +33,68 @@ module.exports.showListing=async (req,res)=>{
 
 
 
-module.exports.createListing=async (req,res,next)=>{
+module.exports.createListing = async (req, res, next) => {
+  try {
+    // 1. Validate required fields
+    if (!req.body.listing?.category) {
+      req.flash('error', 'Category is required');
+      return res.redirect('/listings/new');
+    }
 
-  console.log("FILE RECEIVED:", req.file);
-console.log("BODY RECEIVED:", req.body);
+    // 2. Log incoming data for debugging
+    // console.log('Incoming listing data:', {
+    //   category: req.body.listing.category,
+    //   location: req.body.listing.location,
+    //   file: req.file ? true : false
+    // });
 
-
-    let response=await geocodingClient.forwardGeocode({
+    // 3. Geocoding
+    const response = await geocodingClient.forwardGeocode({
       query: req.body.listing.location,
-     limit:1,
-    })
-      .send()
-      
+      limit: 1
+    }).send();
 
+    if (!response.body.features[0]) {
+      req.flash('error', 'Location not found');
+      return res.redirect('/listings/new');
+    }
 
-  let url=req.file.path;
-  let filename=req.file.filename;
-  
+    // 4. File validation
+    if (!req.file) {
+      req.flash('error', 'Image is required');
+      return res.redirect('/listings/new');
+    }
 
-    const newListing=new Listing(req.body.listing)
-    newListing.owner=req.user._id;
-    newListing.image={url,filename};
-    newListing.geometry=response.body.features[0].geometry;
-    let savedlisting=await newListing.save();
-    console.log(savedlisting);
-  req.flash("success","new listings is created");
-   res.redirect("/listings");
-   
-  };
+    // 5. Create listing with ALL fields explicitly set
+    const listingData = {
+      ...req.body.listing,
+      owner: req.user._id,
+      image: {
+        url: req.file.path,
+        filename: req.file.filename
+      },
+      geometry: response.body.features[0].geometry
+    };
+
+    // 6. Create and save
+    const newListing = new Listing(listingData);
+    const savedListing = await newListing.save();
+    
+    // 7. Verify saved data
+    // console.log('Saved listing with category:', {
+    //   id: savedListing._id,
+    //   category: savedListing.category
+    // });
+
+    req.flash('success', 'New listing created!');
+    res.redirect('/listings');
+
+  } catch (err) {
+    console.error('Create listing error:', err);
+    req.flash('error', 'Failed to create listing');
+    res.redirect('/listings/new');
+  }
+};
 // module.exports.createListing = async (req, res, next) => {
 //   try {
 //     console.log("MAP_TOKEN:", process.env.MAP_TOKEN); // Check if token exists
@@ -133,3 +167,13 @@ module.exports.destroyListing=async(req,res)=>{
     res.redirect("/listings");
 };
 
+module.exports.filterlisting=async (req, res) => {
+      const { category } = req.params;
+      const listings = await Listing.find({ category });
+      res.render("listings/filter", { listings });
+  };
+
+
+module.exports.indexpage=(req,res)=>{
+  res.send("Hiii");
+}

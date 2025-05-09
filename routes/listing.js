@@ -1,7 +1,7 @@
 const express=require("express");
 const router=express.Router({mergeParams:true});
 const wrapAsync=require("../utils/wrapAsync.js");
-const Listing=require("../models/listing.js")
+const Listing=require("../models/listing.js");
 const {listingschema}=require("../schema.js");
 const {reviewschema}=require("../schema.js");
 const {isloggedin, isOwner,validatelisting}=require("../middleware.js");
@@ -15,6 +15,9 @@ router.get("/new",isloggedin,listingcontroller.renderNewForm);
 
 //edit route
 router.get("/:id/edit",isloggedin,isOwner,wrapAsync(listingcontroller.renderEditform));
+
+router.get("/category/:category", wrapAsync(listingcontroller.filterlisting));
+
 
 router.route("/") //index route 
 .get(wrapAsync(listingcontroller.index))
