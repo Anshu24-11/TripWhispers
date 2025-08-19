@@ -1,0 +1,119 @@
+<%- include("../includes/navbar") %>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #ffffff, #f4f4f4);
+  }
+  .dashboard-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #3C3C3C;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  }
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px;
+    border: none;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  }
+  .card-icon {
+    font-size: 2.2rem;
+    margin-right: 12px;
+    color: #FF5A5F;
+  }
+  .card-title {
+    font-weight: 600;
+    color: #333;
+  }
+  .btn-primary {
+    background-color: #FF5A5F;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: #e0484c;
+  }
+  .btn-success {
+    background-color: #00A699;
+    border: none;
+  }
+  .btn-success:hover {
+    background-color: #00897B;
+  }
+  .btn-warning {
+    background-color: #FC642D;
+    border: none;
+  }
+  .btn-secondary {
+    background-color: #484848;
+    border: none;
+  }
+  .btn-dark {
+    background-color: #222;
+    border: none;
+  }
+</style>
+
+<div class="container py-5">
+  <h1 class="text-center dashboard-title mb-5">🌟 Admin Dashboard</h1>
+  <div class="row g-4">
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center"><i class="card-icon bi bi-people-fill"></i>Manage Users</h5>
+          <p class="card-text">View all users, promote to admin, or manage access levels.</p>
+          <a href="/admin/users" class="btn btn-primary w-100">User Panel</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center"><i class="card-icon bi bi-map"></i>Manage Listings</h5>
+          <p class="card-text">View and moderate all listings, delete flagged or reported content.</p>
+          <a href="/admin/listings" class="btn btn-success w-100">Listings Panel</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center"><i class="card-icon bi bi-flag-fill"></i>Review Reports</h5>
+          <p class="card-text">Check flagged listings and user complaints. Take appropriate action.</p>
+          <a href="#" class="btn btn-warning w-100 disabled">Coming Soon</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center"><i class="card-icon bi bi-graph-up"></i>Analytics</h5>
+          <p class="card-text">Gain insights on user activity, growth, and popular listings.</p>
+          <a href="#" class="btn btn-secondary w-100 disabled">Coming Soon</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title d-flex align-items-center"><i class="card-icon bi bi-gear-fill"></i>Site Settings</h5>
+          <p class="card-text">Toggle maintenance mode and manage core site configuration.</p>
+          <a href="#" class="btn btn-dark w-100 disabled">Coming Soon</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -22,7 +22,7 @@ module.exports.isloggedin = (req, res, next) => {
 
     }
     next();
-  }
+  };
   
 
 module.exports.isOwner=async(req,res,next)=>{
@@ -34,7 +34,7 @@ if (!listing.owner.equals(res.locals.currUser._id)) {
 
 } 
 next();
-}
+};
 
 
 
@@ -71,5 +71,14 @@ module.exports.validatelisting=(req,res,next)=>{
           return res.redirect(`/listings/${id}`);
       }
       next();
+  };
+
+  module.exports.isAdmin=async(req,res,next)=>{
+    if (req.isAuthenticated()&&req.user.role=="admin") {
+      return next();
+
+    }
+    req.flash("error","you are not authorized to access this page");
+    return res.redirect("/login");
   }
   

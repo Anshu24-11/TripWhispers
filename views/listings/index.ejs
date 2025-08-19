@@ -2,7 +2,7 @@
 
 <style>
   
-  #filter {
+   #filter {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -38,7 +38,60 @@
 a.filters {
   text-decoration: none;
   color: inherit;
-}
+} 
+
+
+ .listing-card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+    height: 100%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  .listing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .listing-img-wrapper {
+    height: 200px;
+    overflow: hidden;
+  }
+
+  .listing-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .listing-card:hover img {
+    transform: scale(1.05);
+  }
+
+  .listing-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #222;
+  }
+
+  .listing-price {
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  .tax-info {
+    display: none;
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  a.text-decoration-none {
+    text-decoration: none !important;
+  }
 </style>
   
 <div id="filter">
@@ -106,24 +159,36 @@ a.filters {
 </div>
 
 
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
- <% for(let listing of allListings){%>
-    <a href="/listings/<%=listing._id%>" class="listing-link">
- <div class="card col listing-card" >
-    <img src="<%=listing.image.url%>" class="card-img-top" alt="..." style="height: 20rem;">
-    <div class="card-img-overlay"></div>
-    <div class="card-body">
-      <p class="card-text">
-        <b><%=listing.title%></b>
-        <br>
-        &#8377;<%=listing.price.toLocaleString("en-IN")%>/night
-        <i class="tax-info">&nbsp;&nbsp; +18% GST</i>
-      </p>
+ 
+    
+
+
+
+
+
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-1 g-4 mt-3">
+  <% for (let listing of allListings) { %>
+    <div class="col">
+  <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
+    <div class="card listing-card h-100">
+      <div class="listing-img-wrapper">
+        <img src="<%= listing.image.url %>" alt="<%= listing.title %>" />
+      </div>
+      <div class="card-body">
+        <div class="listing-title"><%= listing.title %></div>
+        <p class="text-muted mb-1"><i class="fa-solid fa-location-dot me-1"></i><%= listing.location %></p>
+        <div class="listing-price">
+          ₹<%= listing.price.toLocaleString("en-IN") %>/night
+          <i class="tax-info">+18% GST</i>
+        </div>
+      </div>
     </div>
-  </div>
-</a>
-  <%}%>
+  </a>
 </div>
+
+  <% } %>
+</div>
+
 
    
 <script>

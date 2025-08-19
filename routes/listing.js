@@ -4,7 +4,7 @@ const wrapAsync=require("../utils/wrapAsync.js");
 const Listing=require("../models/listing.js");
 const {listingschema}=require("../schema.js");
 const {reviewschema}=require("../schema.js");
-const {isloggedin, isOwner,validatelisting}=require("../middleware.js");
+const {isloggedin, isOwner,validatelisting, isAdmin}=require("../middleware.js");
 const multer  = require('multer')
 const{storage}=require("../cloudConfig.js");
 const upload = multer({storage});
@@ -33,7 +33,7 @@ router.route("/") //index route
  //show 
 .get(wrapAsync(listingcontroller.showListing)) 
  //delete route
-.delete(isloggedin,isOwner,wrapAsync(listingcontroller.destroyListing)); 
+.delete(isloggedin,wrapAsync(listingcontroller.destroyListing)); 
 
 
 

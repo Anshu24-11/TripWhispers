@@ -161,10 +161,28 @@ module.exports.updateListing=async (req,res)=>{
 
 
 module.exports.destroyListing=async(req,res)=>{
+    // let {id}=req.params;
+    // const deletelistings=await Listing.findByIdAndDelete(id);
+    // req.flash("success"," listings is deleted");
+    // res.redirect("/listings");
     let {id}=req.params;
-    const deletelistings=await Listing.findByIdAndDelete(id);
-    req.flash("success"," listings is deleted");
-    res.redirect("/listings");
+    const listing=await Listing.findById(id);
+    if(!listing){
+      req.flash("error", "Listing not found");
+return res.redirect("/listings");
+    }
+   const isOwner = listing.owner.equals(req.user._id);
+   const isAdmin = req.user.role === "admin";
+
+   if (isOwner||isAdmin) {
+    await listing.deleteOne();
+    req.flash("success","Listing Deleted Successfully");
+    return res.redirect("/listings");
+   }else{
+    req.flash("error", "You are not authorized to delete this listing");
+     return res.redirect(`/listings/${id}`);
+   }
+   
 };
 
 module.exports.filterlisting=async (req, res) => {

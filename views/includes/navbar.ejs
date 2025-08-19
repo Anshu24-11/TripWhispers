@@ -54,6 +54,9 @@
           <%if(!currUser) {%>
             <a class="nav-link  "  href="/signup"><b>Sign Up</b></a>
             <a class="nav-link" href="/login"><b>Log In</b></a>
+            <% if (currUser && currUser.role === 'admin') { %>
+
+<li class="nav-item"> <a class="nav-link" href="/admin/dashboard">Admin Dashboard</a> </li> <% } %>
             <%}%>
             <%if(currUser) {%>    
           <a class="nav-link" href="/logout">Log Out</a>

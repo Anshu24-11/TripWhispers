@@ -122,7 +122,7 @@ app.use((req,res,next)=>{
 app.get("/",(req,res)=>{
   res.render("listings/home")
 })
-
+app.use("/admin", require("./routes/admin"));
 app.use("/listings",listingsRouter);
 app.use("/",userRouter);
 //////////////////////////////////////////////////////////////////////////////////////
@@ -136,11 +136,14 @@ app.use("/listings/:id/reviews",reviewsRouter);
 //     res.send("Hi, I am root");
 //   })
 
+
+
   app.all("*", (req, res, next) => {
 
     next(new ExpressError(404, "Page not found"));
   });
   
+
 
 
 app.use((err, req, res, next) => {
