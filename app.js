@@ -124,6 +124,7 @@ app.get("/",(req,res)=>{
 })
 app.use("/admin", require("./routes/admin"));
 app.use("/listings",listingsRouter);
+app.use("/bookings", require("./routes/booking"));
 app.use("/",userRouter);
 //////////////////////////////////////////////////////////////////////////////////////
 

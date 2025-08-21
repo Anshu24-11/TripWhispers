@@ -80,6 +80,154 @@
   <hr class="my-5">
   <h4 class="mb-3">Where you'll be</h4>
   <div id="map"></div>
+
+
+
+  <!--booking-->
+
+
+  <!-- Booking Form -->
+<!-- Booking Box -->
+<div class="card shadow-sm mt-4" style="border-radius:16px;">
+  <div class="card-body">
+    <h5 class="mb-3 d-flex align-items-center">
+      <i class="fa-solid fa-calendar-check me-2"></i> Book this stay
+    </h5>
+
+    <form action="/bookings" method="POST" class="row g-3">
+      <input type="hidden" name="listingId" value="<%= listing._id %>">
+
+      <div class="col-md-6">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          name="startDate"
+          class="form-control"
+          required
+          min="<%= new Date().toISOString().split('T')[0] %>"
+        >
+      </div>
+
+      <div class="col-md-6">
+        <label for="endDate" class="form-label">End Date</label>
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          class="form-control"
+          required
+          min="<%= new Date().toISOString().split('T')[0] %>"
+        >
+      </div>
+
+      <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between p-3 rounded" style="background:#f8f9fa;">
+          <div>
+            <div class="fw-semibold">
+              <i class="fa-solid fa-moon"></i>
+              Nights: <span id="nights">0</span>
+            </div>
+            <small class="text-muted">
+              ₹ <%= listing.price %> per night
+            </small>
+          </div>
+          <div class="text-end">
+            <div class="fw-bold fs-5">
+              Total: <span id="totalPrice">₹0</span>
+            </div>
+            <small id="dateMsg" class="text-danger d-none">End date must be at least 1 day after start date.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 d-grid">
+        <button id="bookBtn" type="submit" class="btn btn-primary" disabled>
+          <i class="fa-solid fa-ticket-simple me-1"></i> Book Now
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* subtle hover/feel */
+  .card:hover { transform: translateY(-2px); transition: .2s ease; }
+</style>
+
+<script>
+  const startDateInput = document.getElementById("startDate");
+  const endDateInput   = document.getElementById("endDate");
+  const nightsEl       = document.getElementById("nights");
+  const totalPriceEl   = document.getElementById("totalPrice");
+  const bookBtn        = document.getElementById("bookBtn");
+  const dateMsg        = document.getElementById("dateMsg");
+  const pricePerNight  = Number(<%= listing.price %>); // ensure number
+
+  // helper: parse yyyy-mm-dd safely in UTC to avoid timezone issues
+  function parseYMD(s) {
+    if (!s) return null;
+    const [y,m,d] = s.split("-").map(Number);
+    return new Date(Date.UTC(y, (m||1)-1, d||1));
+  }
+
+  function updateMinEndDate() {
+    const start = parseYMD(startDateInput.value);
+    if (!start) return;
+
+    const minEnd = new Date(start);
+    minEnd.setUTCDate(minEnd.getUTCDate() + 1); // at least +1 day
+    endDateInput.min = minEnd.toISOString().split("T")[0];
+
+    // auto-correct if invalid
+    const currentEnd = parseYMD(endDateInput.value);
+    if (!currentEnd || currentEnd <= start) {
+      endDateInput.value = endDateInput.min;
+    }
+  }
+
+  function recalc() {
+    const start = parseYMD(startDateInput.value);
+    const end   = parseYMD(endDateInput.value);
+
+    if (!start || !end) {
+      nightsEl.textContent = "0";
+      totalPriceEl.textContent = new Intl.NumberFormat("en-IN", { style:"currency", currency:"INR" }).format(0);
+      bookBtn.disabled = true;
+      dateMsg.classList.add("d-none");
+      return;
+    }
+
+    const diffMs = end - start;
+    const nights = Math.round(diffMs / 86400000); // exact days
+
+    if (nights < 1) {
+      nightsEl.textContent = "0";
+      totalPriceEl.textContent = new Intl.NumberFormat("en-IN", { style:"currency", currency:"INR" }).format(0);
+      bookBtn.disabled = true;
+      dateMsg.classList.remove("d-none");
+      return;
+    }
+
+    dateMsg.classList.add("d-none");
+    nightsEl.textContent = String(nights);
+    const total = nights * pricePerNight;
+    totalPriceEl.textContent = new Intl.NumberFormat("en-IN", { style:"currency", currency:"INR" }).format(total);
+    bookBtn.disabled = false;
+  }
+
+  // events
+  startDateInput.addEventListener("change", () => { updateMinEndDate(); recalc(); });
+  endDateInput.addEventListener("change",   recalc);
+
+  // init
+  (function init() {
+    // ensure end date is at least +1 from today if start empty
+    if (startDateInput.value) updateMinEndDate();
+    recalc();
+  })();
+</script>
+
 </div>
 <script src="/js/map.js"></script>
 
