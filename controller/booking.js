@@ -59,16 +59,7 @@ module.exports.createBooking = async (req, res) => {
     const html=bookingConfirmationTemplate(req.user.username,listing.title,booking.startDate,booking.endDate);
     await sendMail(req.user.email,"Booking Confirmation - TripWhispers",html);
 
-    // await sendMail(
-    //   req.user.email,
-    //   "Booking Confirmation - TripWhispers",
-    //   `Hi ${req.user.username}, your booking for ${listing.title} is confirmed from ${startDate} to ${endDate}. Total Price: $${totalPrice}`,
-    //   `<h2>Booking Confirmed 🎉</h2>
-    //   <p><b>Listing:</b> ${listing.title}</p>
-    //   <p><b>Dates:</b> ${startDate} to ${endDate}</p>
-    //   <p><b>Total Price:</b> $${totalPrice}</p>
-    //   <p>Thank you for booking with <b>TripWhispers</b>!</p>`
-    // );
+
 
 
 
@@ -114,15 +105,7 @@ module.exports.cancelBooking=async(req,res)=>{
     const html=bookingCancellationTemplate(req.user.username,booking.listing.title,booking.startDate);
     await sendMail(req.user.email, "Booking Cancelled - TripWhispers", html);
 
-    // if (booking.user && booking.user.email) {
-    //   await sendMail(
-    //     booking.user.email,
-    //     "Booking Cancelled",
-    //     `<h3>Your booking for <b>${booking.listing.title}</b> has been cancelled.</h3>
-    //      <p>We’re sorry to see you cancel. If this was a mistake, you can rebook anytime.</p>`
-      
-    //   );
-    // }
+   
 
     req.flash("success","Booking cancelled successfully and email sent!");
     res.redirect("/bookings/mybookings");
