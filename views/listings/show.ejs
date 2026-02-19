@@ -8,8 +8,20 @@
 
    <div class="container mt-5">
   <h1 class="fw-bold mb-3"><%= listing.title %></h1>
-  <img src="<%= listing.image.url %>" class="listing-image" alt="<%= listing.title %>" />
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      
+      <div class="image-wrapper">
+        <img src="<%= listing.image.url %>" 
+             class="listing-image"
+             alt="<%= listing.title %>" />
+      </div>
 
+    </div>
+  </div>
+</div>
+<br><br><br>
   <div class="meta-info"><i class="fa-solid fa-user"></i>Owned by <strong><%= listing.owner.username %></strong></div>
   <div class="meta-info"><i class="fa-solid fa-indian-rupee-sign"></i><%= listing.price.toLocaleString("en-IN") %> / night</div>
   <div class="meta-info"><i class="fa-solid fa-location-dot"></i><%= listing.location %>, <%= listing.country %></div>

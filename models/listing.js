@@ -1,10 +1,6 @@
-const mongoose=require("mongoose");
-const reviews = require("./reviews");
-const Schema=mongoose.Schema;
-const Review=require("./reviews");
-const { ref } = require("joi");
-
-
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const Review = require("./reviews");
 
 const listingSchema = new Schema({
   title: { type: String, required: true },
@@ -16,7 +12,8 @@ const listingSchema = new Schema({
   price: Number,
   location: String,
   country: String,
-  category: {  // ← MOVE HERE
+  category: {
+    // ← MOVE HERE
     type: String,
     enum: [
       "Trending",
@@ -29,7 +26,7 @@ const listingSchema = new Schema({
       "Farm",
       "Arctic",
       "Domes",
-      "Boats"
+      "Boats",
     ],
   },
   reviews: [
@@ -45,23 +42,21 @@ const listingSchema = new Schema({
   geometry: {
     type: {
       type: String,
-      enum: ['Point'],
-      required: true
+      enum: ["Point"],
+      required: true,
     },
     coordinates: {
       type: [Number],
-      required: true
-    }
+      required: true,
+    },
+  },
+});
+
+listingSchema.post("findOneAndDelete", async (listing) => {
+  if (listing) {
+    await Review.deleteMany({ _id: { $in: listing.reviews } });
   }
 });
 
-
-  listingSchema.post("findOneAndDelete",async(listing)=>{
-    if (listing) {
-      await Review.deleteMany({_id:{$in:listing.reviews}});
-      
-    }
-  })
-
-const Listing =mongoose.model("Listing",listingSchema);
-module.exports=Listing;
+const Listing = mongoose.model("Listing", listingSchema);
+module.exports = Listing;

@@ -1,9 +1,8 @@
 require("dotenv").config();
 
 const mongoose = require("mongoose");
-const User = require("./models/users");      // fixed path
+const User = require("./models/users"); // fixed path
 const Listing = require("./models/listing"); // fixed path
-
 
 async function cleanup() {
   try {

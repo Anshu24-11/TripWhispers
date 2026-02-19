@@ -1,21 +1,22 @@
 const User = require("../models/users");
+const Listing = require("../models/listing");
 
-module.exports.getDashboard=(req,res)=>{
-    res.render("admin/dashboard");
+module.exports.getDashboard = (req, res) => {
+  res.render("admin/dashboard");
 };
 
-module.exports.getUsers=async(req,res)=>{
-     try{
-        const users=await User.find({});
-        res.render("admin/userpanel",{users});
-        }catch{
-            req.flash("error", "Cannot load users.");
-            res.redirect("/admin");
-        }
+module.exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.render("admin/userpanel", { users });
+  } catch {
+    req.flash("error", "Cannot load users.");
+    res.redirect("/admin");
+  }
 };
 
-module.exports.promoteUser=async(req,res)=>{
-    try {
+module.exports.promoteUser = async (req, res) => {
+  try {
     await User.findByIdAndUpdate(req.params.id, { role: "admin" });
     req.flash("success", "User promoted to admin.");
     res.redirect("/admin/users");
@@ -35,7 +36,6 @@ module.exports.demoteUser = async (req, res) => {
     res.redirect("/admin/users");
   }
 };
-
 
 module.exports.deleteUser = async (req, res) => {
   try {
