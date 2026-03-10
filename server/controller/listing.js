@@ -5,7 +5,8 @@ const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 module.exports.index = async (req, res) => {
   const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { allListings });
+  res.json({ allListings });
+  // res.render("listings/index.ejs", { allListings });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -26,18 +27,21 @@ module.exports.showListing = async (req, res) => {
     req.flash("error", "Lisitng you requested for does not exist");
     return res.redirect("/listings");
   }
+  res.json({ listing });
 
-  res.render("listings/show.ejs", {
-    listing,
-    MAP_TOKEN: process.env.MAP_TOKEN,
-  });
+  // res.render("listings/show.ejs", {
+  //   listing,
+  //   MAP_TOKEN: process.env.MAP_TOKEN,
+  // });
 };
 
-module.exports.createListing = async (req, res, next) => {
+module.exports.createListing = async (req, res) => {
   try {
     if (!req.body.listing?.category) {
-      req.flash("error", "Category is required");
-      return res.redirect("/listings/new");
+      return res.status(400).json({
+        success: false,
+        message: "Category is required",
+      });
     }
 
     const response = await geocodingClient
@@ -48,13 +52,17 @@ module.exports.createListing = async (req, res, next) => {
       .send();
 
     if (!response.body.features[0]) {
-      req.flash("error", "Location not found");
-      return res.redirect("/listings/new");
+      return res.status(400).json({
+        success: false,
+        message: "Location not found",
+      });
     }
 
     if (!req.file) {
-      req.flash("error", "Image is required");
-      return res.redirect("/listings/new");
+      return res.status(400).json({
+        success: false,
+        message: "Image is required",
+      });
     }
 
     const listingData = {
@@ -70,15 +78,19 @@ module.exports.createListing = async (req, res, next) => {
     const newListing = new Listing(listingData);
     await newListing.save();
 
-    req.flash("success", "New listing created!");
-    res.redirect("/listings");
+    res.status(201).json({
+      success: true,
+      listing: newListing,
+    });
   } catch (err) {
     console.error("Create listing error:", err);
-    req.flash("error", "Failed to create listing");
-    res.redirect("/listings/new");
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to create listing",
+    });
   }
 };
-
 module.exports.renderEditform = async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
@@ -94,6 +106,7 @@ module.exports.renderEditform = async (req, res) => {
 
 module.exports.updateListing = async (req, res) => {
   let { id } = req.params;
+
   let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
 
   if (typeof req.file !== "undefined") {
@@ -103,8 +116,9 @@ module.exports.updateListing = async (req, res) => {
     await listing.save();
   }
 
-  req.flash("success", " listings is updated");
-  res.redirect(`/listings/${id}`);
+  return res
+    .status(200)
+    .json({ success: true, messsage: "Listing edited successfully" });
 };
 
 module.exports.destroyListing = async (req, res) => {
@@ -119,18 +133,22 @@ module.exports.destroyListing = async (req, res) => {
 
   if (isOwner || isAdmin) {
     await listing.deleteOne();
-    req.flash("success", "Listing Deleted Successfully");
-    return res.redirect("/listings");
+    return res.status(200).json({
+      success: true,
+      message: "Listing deleted successfully",
+    });
   } else {
-    req.flash("error", "You are not authorized to delete this listing");
-    return res.redirect(`/listings/${id}`);
+    return res.status(400).json({
+      success: false,
+      message: "You are not authorized to delete the listing",
+    });
   }
 };
 
 module.exports.filterlisting = async (req, res) => {
   const { category } = req.params;
   const listings = await Listing.find({ category });
-  console.log(listings);
+    
   if (listings.length == 0) {
     req.flash("error", "There is no listngs for this filter");
     return res.redirect("/listings");

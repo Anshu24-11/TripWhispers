@@ -14,7 +14,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
-const LocalStrtegy = require("passport-local");
+const LocalStrategy = require("passport-local");
 const User = require("./models/users.js");
 
 const listingsRouter = require("./routes/listing.js");
@@ -23,7 +23,12 @@ const userRouter = require("./routes/user.js");
 
 const cors = require("cors");
 const { error } = require("console");
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // React app URL
+    credentials: true, // allow cookies
+  }),
+);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -46,11 +51,11 @@ const sessionoptions = {
   store,
   secret: process.env.SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    sameSite: "lax",
   },
 };
 
@@ -59,10 +64,19 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrtegy(User.authenticate()));
+passport.use(new LocalStrategy(User.authenticate()));
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 main()
   .then(() => {
@@ -79,6 +93,7 @@ async function main() {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
@@ -97,7 +112,7 @@ app.get("/", (req, res) => {
 app.use("/admin", require("./routes/admin"));
 app.use("/listings", listingsRouter);
 app.use("/bookings", require("./routes/booking"));
-app.use("/", userRouter);
+app.use("/api/users", userRouter);
 
 app.use("/listings/:id/reviews", reviewsRouter);
 
@@ -108,11 +123,15 @@ app.all("*", (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong" } = err;
+  if (req.originalUrl.startsWith("/api")) {
+    return res.status(statusCode).json({
+      success: false,
+      message,
+    });
+  }
 
   res.status(statusCode).render("listings/error.ejs", { message });
 });
-
-app.use(express.json());
 
 app.listen(8080, () => {
   console.log("server is listening to port 8080");

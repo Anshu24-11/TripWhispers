@@ -13,7 +13,6 @@ const listingSchema = new Schema({
   location: String,
   country: String,
   category: {
-    // ← MOVE HERE
     type: String,
     enum: [
       "Trending",

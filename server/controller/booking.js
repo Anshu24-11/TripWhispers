@@ -10,8 +10,10 @@ module.exports.createBooking = async (req, res) => {
     const listing = await Listing.findById(listingId);
 
     if (!listing) {
-      req.flash("error", "Listing not found");
-      return res.redirect("back");
+      return res.status(400).json({
+        success: false,
+        message: "listing not found",
+      });
     }
 
     const start = new Date(startDate);
@@ -19,25 +21,33 @@ module.exports.createBooking = async (req, res) => {
     const today = new Date();
 
     if (start < today.setHours(0, 0, 0, 0)) {
-      req.flash("error", "start date can not be in past");
-      return res.redirect("back");
+      return res.status(400).json({
+        success: false,
+        message: "start date can not be in past",
+      });
     }
     if (end <= start) {
-      req.flash("error", "End date must be after start date");
-      return res.redirect("back");
+      return res.status(400).json({
+        success: false,
+        message: "End date must be after start date",
+      });
     }
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      req.flash("error", "invalid dates");
-      return req.redirect("back");
+      return res.status(400).json({
+        success: false,
+        message: "invalid dates",
+      });
     }
 
     const diff = end - start;
     const nights = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
     if (nights <= 0) {
-      req.flash("error", "end date must be after start date");
-      return req.redirect("back");
+      return res.status(400).json({
+        success: false,
+        message: "End date must be after start date",
+      });
     }
 
     //counting price
@@ -60,12 +70,16 @@ module.exports.createBooking = async (req, res) => {
     );
     await sendMail(req.user.email, "Booking Confirmation - TripWhispers", html);
 
-    req.flash("success", "Booking successful!");
-    res.redirect(`/listings/${listingId}`);
+    return res.status(200).json({
+      messsage: "Booking created successfully",
+      booking: booking,
+    });
   } catch (err) {
     console.log(err);
-    req.flash("error", "Failed to create booking");
-    res.redirect("back");
+
+    return res
+      .status(400)
+      .json({ success: false, message: "Failed to create booking" });
   }
 };
 
@@ -74,11 +88,17 @@ module.exports.getUserBookings = async (req, res) => {
     const bookings = await Booking.find({ user: req.user._id }).populate(
       "listing",
     );
-    res.render("booking/userBooking", { bookings });
+    return res.status(200).json({
+      success: true,
+      message: "Your bookings",
+      bookings: bookings,
+    });
   } catch (err) {
     console.log(err);
-    req.flash("error", "Cannot load your bookings");
-    res.redirect(req.get("Referrer") || "/");
+    return res.status(404).json({
+      success: false,
+      message: "Could not load your bookings",
+    });
   }
 };
 
@@ -113,7 +133,7 @@ module.exports.cancelBooking = async (req, res) => {
 
     req.flash("success", "Booking cancelled successfully and email sent!");
     res.redirect("/bookings/mybookings");
-  // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
     req.flash("error", "Could not cancel booking.");
     res.redirect("/bookings/mybookings");

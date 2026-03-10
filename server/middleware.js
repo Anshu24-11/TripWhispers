@@ -7,8 +7,10 @@ const { reviewSchema } = require("./schema.js");
 module.exports.isloggedin = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.session.redirectUrl = req.originalUrl;
-    req.flash("error", "You must be logged in to create listings");
-    return res.redirect("/login");
+    return res.status(400).json({
+      success: false,
+      message: "Please log in",
+    });
   }
   next();
 };
@@ -24,9 +26,12 @@ module.exports.isOwner = async (req, res, next) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
   if (!listing.owner.equals(res.locals.currUser._id)) {
-    req.flash("error", "You are not owener of this lisitng");
-    return res.redirect(`/listings/${id}`);
+    return res.status(400).json({
+      success: false,
+      message: "You are not owener of this lisitng",
+    });
   }
+
   next();
 };
 
@@ -35,7 +40,10 @@ module.exports.validatelisting = (req, res, next) => {
 
   if (error) {
     let errormsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errormsg);
+    return res.status(400).json({
+      success: false,
+      message: errormsg,
+    });
   } else {
     next();
   }
@@ -53,12 +61,15 @@ module.exports.validatereview = (req, res, next) => {
 };
 
 module.exports.isauthor = async (req, res, next) => {
-  let { id, reviewId } = req.params;
-  let review = await Review.findById(reviewId).populate("author");
+  let { reviewId } = req.params;
 
+  const review = await Review.findById(reviewId).populate("author");
   if (!review.author.equals(res.locals.currUser._id)) {
     req.flash("error", "You did not create this review");
-    return res.redirect(`/listings/${id}`);
+    // throw new ExpressError(400, "you did not created this review");
+    return res.status(400).json({
+      error: "you did not created this review",
+    });
   }
   next();
 };

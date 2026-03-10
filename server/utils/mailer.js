@@ -8,14 +8,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// start this function in production stage
 const sendMail = async (to, subject, html = null) => {
   try {
-    await transporter.sendMail({
-      from: `"TripWhispers" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    });
+    // await transporter.sendMail({
+    //   from: `"TripWhispers" <${process.env.EMAIL_USER}>`,
+    //   to,
+    //   subject,
+    //   html,
+    // });
     console.log("Email sent successfully ✅");
   } catch (error) {
     console.log("Error sending email ❌", error);

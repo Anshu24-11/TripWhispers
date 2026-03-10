@@ -1,6 +1,15 @@
+# environment variables
 .env
+
+# dependencies
 node_modules/
-**/.DS_Storeseedimages
-seedimages/
+
+# Mac system files
 .DS_Store
-models/.DS_Store
+
+# build folders
+dist/
+build/
+
+# seed images (if you don't want them in repo)
+seedimages/
