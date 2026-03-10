@@ -32,6 +32,9 @@ router
   );
 
 router
+  .route("/search")
+  .get(isloggedin, wrapAsync(listingcontroller.searchListings));
+router
   .route("/:id")
   //update route
   .put(

@@ -5,7 +5,13 @@ import API from "../api/axios.config";
 
 function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
+
+  const handleSearch = () => {
+    navigate(`/listings/search?query=${search}`);
+    setSearch("");
+  };
 
   // Check logged-in user
   useEffect(() => {
@@ -36,6 +42,21 @@ function Navbar() {
         <Link to="/" className="text-2xl font-bold text-blue-600">
           Wanderlust
         </Link>
+        {/* Search */}
+        <div className="flex items-center">
+          <input
+            placeholder="search listings"
+            className="flex items-center border rounded-xl p-2 w-64"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          ></input>
+          <button
+            onClick={handleSearch}
+            className="border rounded-lg hover:border-red-500 transition shadow-sm p-2 m-2 hover:bg-red-500 w-16"
+          >
+            <i className="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
 
         {/* Right Side Links */}
         <div className="flex items-center gap-8 text-gray-700 font-medium">

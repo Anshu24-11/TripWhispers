@@ -20,7 +20,7 @@ const User = require("./models/users.js");
 const listingsRouter = require("./routes/listing.js");
 const reviewsRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
-
+const chatbotRoute = require("./routes/chatbot.js");
 const cors = require("cors");
 const { error } = require("console");
 app.use(
@@ -113,6 +113,7 @@ app.use("/admin", require("./routes/admin"));
 app.use("/listings", listingsRouter);
 app.use("/bookings", require("./routes/booking"));
 app.use("/api/users", userRouter);
+app.use("/chatbot", chatbotRoute);
 
 app.use("/listings/:id/reviews", reviewsRouter);
 
